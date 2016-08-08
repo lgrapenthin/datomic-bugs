@@ -10,22 +10,21 @@
 
 (deftest ident-resolution
   ;; datomic-free 0.9.5390
-  ;; expected: (= (d/q (quote [:find ?e :in $ [?ident ...] [?e ...] :where [?e :db/ident ?ident]]) test-db [:db/add] [:db/add]) #{[:db/add]})
-  ;;   actual: (not (= #{} #{[:db/add]}))
-  (is (= (d/q '[:find ?e
+  ;; expected: (= #{[:db/add]} (d/q (quote [:find ?e :in $ [?e ...] [?ident ...] :where [?e :db/ident ?ident]]) test-db [:db/add] [:db/add]) (d/q (quote [:find ?e :in $ [?ident ...] [?e ...] :where [?e :db/ident ?ident]]) test-db [:db/add] [:db/add]))
+  ;; actual: (not (= #{[:db/add]} #{[:db/add]} #{}))
+  (is (= #{[:db/add]}
+         (d/q '[:find ?e
                 :in $ [?e ...] [?ident ...]
                 :where [?e :db/ident ?ident]]
               test-db
               [:db/add]
               [:db/add])
-         #{[:db/add]}))
-  (is (= (d/q '[:find ?e
+         (d/q '[:find ?e
                 :in $ [?ident ...] [?e ...]
                 :where [?e :db/ident ?ident]]
               test-db
               [:db/add]
-              [:db/add])
-         #{[:db/add]})))
+              [:db/add]))))
 
 (deftest card-many-cas
   ;; datomic-free 0.9.5390
